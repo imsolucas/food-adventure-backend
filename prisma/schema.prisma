@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  picture       String?
+  googleId      String    @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  preferences   FoodPreference[]
+  savedPlaces   SavedPlace[]
+}
+
+model FoodPreference {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // e.g., "spicy", "vegetarian"
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SavedPlace {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  location    String
+  priceRange  String
+  description String?
+  specialty   String?
+  contact     String?
+  verified    Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
